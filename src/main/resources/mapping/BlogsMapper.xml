@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blogs.dao.BlogsMapper">
+    <resultMap id="blogsMap" type="com.blogs.entity.pojo.MyBlogs">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="subhead" property="subhead"/>
+        <result column="content" property="content"/>
+        <result column="user_id" property="userId"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <sql id="commonSql" >
+        id, title, subhead, content, user_id, update_time, create_time
+    </sql>
+    <!--Boolean addBlogs(MyBlogs myblogs);-->
+    <insert id="addBlogs" useGeneratedKeys="true" keyProperty="id">
+        insert into my_blogs (title, subhead, content, user_id, update_time, create_time)
+        values (#{title}, #{subhead}, #{content}, #{userId}, now(), now())
+    </insert>
+    <!-- Boolean updateBlogs(MyBlogs myblogs); -->
+    <update id="updateBlogs">
+        update my_blogs
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="subhead != null and subhead != ''">
+                subhead = #{subhead},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            update_time = now()
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+    <!-- MyBlogs getBlogs(MyBlogs myblogs); -->
+    <select id="getBlogs" resultMap="blogsMap">
+        select
+        <include refid="commonSql"/>
+        from my_blogs
+        <where>
+            <if test="title != null and title != ''">
+                title = like CONCAT('%',#{title},'%')
+            </if>
+            <if test="subhead != null and subhead != ''">
+                and subhead = #{subhead}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+        </where>
+    </select>
+    <!-- Boolean deleteBlogsById(Long id); -->
+    <delete id="deleteBlogsById" >
+        delete from my_blogs
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+    
+</mapper>
